@@ -123,7 +123,7 @@ func doStuff() error {
 
 	content, err := mustache.RenderFile(template, licenses)
 	if err != nil {
-		return fmt.Errorf("Failed to parse %v", template)
+		return fmt.Errorf("Failed to render %v", template)
 	}
 
 	fmt.Printf("%v", content)
