@@ -16,7 +16,7 @@ func main() {
 }
 
 var source string
-var template string
+var customTemplatePath string
 
 var rootCmd = &cobra.Command{
 	Use:   "lisc",
@@ -39,11 +39,10 @@ func Execute() {
 }
 
 const fname = "Gopkg.lock"
-const templ = "template.mustache"
 
 func init() {
 	rootCmd.Flags().StringVarP(&source, "source", "s", ".", "Source directory to read Gopkg.lock from.")
-	rootCmd.Flags().StringVarP(&template, "template", "t", templ, "Path pointing to the mustache template file to use for output generation.")
+	rootCmd.Flags().StringVarP(&customTemplatePath, "template", "t", "", "Path pointing to the mustache template file to use for output generation.")
 }
 
 type project struct {
@@ -125,9 +124,14 @@ func doStuff() error {
 		return fmt.Errorf("Failed to parse licenses from %v", root)
 	}
 
-	content, err := mustache.RenderFile(template, licenses)
+	template, err := getTemplate()
 	if err != nil {
-		return fmt.Errorf("Failed to render %v", template)
+		return fmt.Errorf("Failed to load template: %v", err)
+	}
+
+	content, err := mustache.Render(template, licenses)
+	if err != nil {
+		return fmt.Errorf("Failed to render %v: %v", template, err)
 	}
 
 	fmt.Printf("%v", content)
@@ -135,3 +139,30 @@ func doStuff() error {
 	return nil
 
 }
+
+func getTemplate() (string, error) {
+
+	if customTemplatePath != "" {
+
+		bytes, err := ioutil.ReadFile(customTemplatePath)
+		if err != nil {
+			return "", fmt.Errorf("Unable to read %v", customTemplatePath)
+		}
+
+		return string(bytes), nil
+	}
+
+	return defaultTemplate, nil
+}
+
+const defaultTemplate = `{{#.}}
+{{#Version}}
+{{Package}}@{{Version}}
+{{/Version}}
+{{^Version}}
+{{Package}}
+{{/Version}}
+
+{{{License}}}
+---
+{{/.}}`
