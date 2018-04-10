@@ -8,7 +8,7 @@ lisc is inspired by [license-webpack-plugin](https://www.npmjs.com/package/licen
 ```go get github.com/kogu-io/lisc```
 
 ## Quick start
-* Set your current working directory to a Golang project folder using `dep`,
+* Set your current working directory to a dep-aware Golang project folder,
 * Run ```lisc > licenses.txt```,
 * Use `licenses.txt` as you see fit.
 
