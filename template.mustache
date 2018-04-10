@@ -1,11 +1,5 @@
 {{#.}}
-{{#Version}}
-{{Package}}@{{Version}}
-{{/Version}}
-{{^Version}}
-{{Package}}
-{{/Version}}
-
+{{Package}}{{#Version}}@{{Version}}{{/Version}}
 {{{License}}}
 ---
 {{/.}}
